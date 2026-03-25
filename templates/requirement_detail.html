@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-2">
+    <h2>{{ requirement.title }}</h2>
+
+    <p>
+        <strong>Location:</strong>
+        {{ requirement.location|default:"Not specified" }}
+    </p>
+
+    <p>
+        <strong>Experience:</strong>
+        {{ requirement.experience|default:"Not specified" }}
+    </p>
+
+    <p>
+        <strong>Key Skills:</strong><br>
+        {% if requirement.skills %}
+            {{ requirement.skills }}
+        {% else %}
+            <em>No skills listed.</em>
+        {% endif %}
+    </p>
+
+    <p>
+        <strong>Job Description:</strong><br>
+        <pre style="white-space: pre-wrap; background:#f8f9fa; padding:10px; border-radius:4px;">
+{{ requirement.job_description }}
+        </pre>
+    </p>
+
+    <p>
+        <strong>Created At:</strong>
+        {{ requirement.created_at|date:"Y-m-d H:i" }}
+    </p>
+
+    <a href="{% url 'requirements_list' %}" class="btn btn-secondary">Back to Requirements</a>
+
+    <!-- Optional: direct button to upload CV page -->
+    <a href="{% url 'upload_cv' %}" class="btn btn-primary ms-2">
+        Rate CVs for this role
+    </a>
+</div>
+
+{% endblock %}

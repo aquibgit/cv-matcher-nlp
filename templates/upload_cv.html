@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-2">
+    <h2 class="mb-3">Upload / Paste CV & Rate</h2>
+
+    {% if messages %}
+        {% for m in messages %}
+            <div class="alert alert-{{ m.tags|default:'info' }} mb-2">
+                {{ m }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Select requirement -->
+        <div class="mb-3">
+            <label class="form-label">Select Job Requirement<span class="text-danger">*</span></label>
+            <select name="requirement_id" class="form-select">
+                <option value="">-- Select Requirement --</option>
+                {% for req in requirements %}
+                    <option value="{{ req.id }}"
+                        {% if req.id|stringformat:"s" == selected_requirement_id|stringformat:"s" %}selected{% endif %}>
+                        {{ req.title }}{% if req.location %} - {{ req.location }}{% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Upload CV file -->
+        <div class="mb-3">
+            <label class="form-label">Upload CV (PDF / DOC / DOCX)</label>
+            <input type="file" name="cv_file" class="form-control">
+            <div class="form-text">
+                You can either upload a CV file or paste the text below.
+            </div>
+        </div>
+
+        <!-- Or paste CV text -->
+        <div class="mb-3">
+            <label class="form-label">Or Paste CV Text</label>
+            <textarea name="cv_text" rows="12" class="form-control"
+                      placeholder="Paste the full CV text here...">{{ cv_text|default_if_none:'' }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit & Rate CV</button>
+    </form>
+
+{% if result %}
+    <hr class="my-4">
+    <h3>CV Rating Result</h3>
+<p><strong>Overall Score:</strong> {{ result.overall_score }} / 100</p>
+<p><strong>Keyword Coverage:</strong> {{ result.keyword_coverage }}%</p>
+<p><strong>Skills Score:</strong> {{ result.skills_score }}%</p>
+<p><strong>Skill Phrase Coverage:</strong> {{ result.phrase_coverage }}%</p>
+<p><strong>Experience Match Score:</strong> {{ result.experience_score }}%</p>
+
+
+    <h5>Matched Keywords</h5>
+    <p>
+        {% if result.matched_keywords %}
+            {{ result.matched_keywords|join:", " }}
+        {% else %}
+            <em>No strong matches found.</em>
+        {% endif %}
+    </p>
+
+    <h5>Missing Keywords (Important from JD)</h5>
+    <p>
+        {% if result.missing_keywords %}
+            {{ result.missing_keywords|join:", " }}
+        {% else %}
+            <em>Great! CV covers most JD keywords.</em>
+        {% endif %}
+    </p>
+{% endif %}
+
+</div>
+
+{% endblock %}
